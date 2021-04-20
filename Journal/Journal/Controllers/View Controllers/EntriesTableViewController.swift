@@ -8,32 +8,34 @@
 import UIKit
 
 class EntriesTableViewController: UITableViewController {
+    
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        EntryController.shared.loadFromPersistenceStore()
         
     }
-
-    // MARK: - Table view data source
-
     override func viewWillAppear(_ animated: Bool) {
         
         tableView.reloadData()
         
     }
     
+    // MARK: - Properties
+    
+    var journal: Journal?
+    
+    // MARK: - Table View Data Source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
      
-        return EntryController.shared.entries.count
+        return journal?.entries.count ?? 0
         
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "entryCell", for: indexPath)
 
-        let entry = EntryController.shared.entries[indexPath.row]
+        guard let entry = journal?.entries[indexPath.row] else {return cell}
         
         cell.textLabel?.text = entry.title
         
@@ -42,30 +44,45 @@ class EntriesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-          
-            let entryToDelete = EntryController.shared.entries[indexPath.row]
             
-            EntryController.shared.deleteEntry(entryToBeDeleted: entryToDelete)
+             guard let journal = journal else {return}
+          
+             let entryToRemove = journal.entries[indexPath.row]
+            
+            EntryController.deleteEntry(entryToRemove: entryToRemove , journal: journal)
             
             tableView.deleteRows(at: [indexPath], with: .fade)
             
         }
         
     }
+    
+    
 
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        guard let journal = journal else {return}
        
-        if segue.identifier == "toEntryDetails" {
+        if segue.identifier == "showEntry" {
             
             guard let indexPath = tableView.indexPathForSelectedRow,
-            
             let destinationVC = segue.destination as? EntryDetailViewController else {return}
             
-            let entryToSend = EntryController.shared.entries[indexPath.row]
+            let entryToSend = journal.entries[indexPath.row]
+            let journalToSend = journal
             
             destinationVC.entry = entryToSend
+            destinationVC.journal = journalToSend
+        } else if segue.identifier == "createNewEntry" {
+            
+            guard let destinationVC = segue.destination as? EntryDetailViewController else {return}
+            
+            let journalToSend = journal
+            
+            destinationVC.journal = journalToSend
+            
         }
         
     }

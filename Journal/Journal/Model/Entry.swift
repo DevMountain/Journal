@@ -9,11 +9,11 @@ import Foundation
 
 class Entry: Codable {
     
-    let title: String
-    let body: String
+    var title: String
+    var body: String
     let timeStamp: Date
     
-    init(title: String, body: String, timeStamp: Date) {
+    init(title: String, body: String, timeStamp: Date = Date()) {
         
         self.title = title
         self.body = body

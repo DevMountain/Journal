@@ -10,6 +10,7 @@ import UIKit
 class EntryDetailViewController: UIViewController {
 
     // MARK: - Outlets
+    
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var bodyTextField: UITextField!
     
@@ -19,8 +20,9 @@ class EntryDetailViewController: UIViewController {
         updateViews()
     }
 
-    // MARK: - Prperties
+    // MARK: - Properties
     var entry: Entry?
+    var journal: Journal?
     
     // MARK: - Actions
     @IBAction func clearButtonPressed(_ sender: UIButton) {
@@ -32,16 +34,17 @@ class EntryDetailViewController: UIViewController {
     
     @IBAction func saveButtonTapped(_ sender: Any) {
         
+        guard let title = titleTextField.text,
+              let body = bodyTextField.text,
+              let journal = journal else {return}
+        
         if let entry = entry  {
             
-        print("To be implimented tomorow")
+            EntryController.update(entry: entry, newTitle: title, newBody: body)
             
         } else {
-          
-            guard let title = titleTextField.text,
-                  let body = bodyTextField.text else {return}
             
-            EntryController.shared.createEntryWith(title: title, body: body)
+            EntryController.createEntryWith(title: title, body: body, journal: journal)
             
         }
         
@@ -60,6 +63,5 @@ class EntryDetailViewController: UIViewController {
         
     }
         
-    
 }//End of class
 

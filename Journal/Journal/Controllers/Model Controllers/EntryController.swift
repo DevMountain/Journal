@@ -9,56 +9,33 @@ import Foundation
 
 class EntryController {
     
-    // MARK: - Properties
-    
-    static let shared = EntryController()
-    
-    var entries: [Entry] = []
-    
     // MARK: - Functions
     
-    func createEntryWith(title: String, body: String) {
+    static func createEntryWith(title: String, body: String, journal: Journal) {
         
-        let newEntry = Entry(title: title, body: body, timeStamp: Date())
+        let newEntry = Entry(title: title, body: body)
         
-        entries.append(newEntry)
+        JournalController.shared.addEntryTo(entryToAdd: newEntry, journal: journal)
         
-        saveToPersistenceStore()
+        JournalController.shared.saveToPersistenceStore()
+        
     }
     
-    func deleteEntry(entryToBeDeleted: Entry) {
+    static func deleteEntry(entryToRemove: Entry, journal: Journal) {
         
-        guard let index = entries.firstIndex(of: entryToBeDeleted) else {return}
+        JournalController.shared.removeEntry(journal: journal, entryToRemove: entryToRemove)
         
-        entries.remove(at: index)
+        JournalController.shared.saveToPersistenceStore()
         
-        saveToPersistenceStore()
     }
     
-    // MARK: - Persistence
-    
-    private func fileURL() -> URL {
-     let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-     let documentsDirectoryURL = urls[0].appendingPathComponent("Journal.json")
-     return documentsDirectoryURL
-    }
-    
-    func saveToPersistenceStore() {
-        do {
-            let data = try JSONEncoder().encode(entries)
-            try data.write(to: fileURL())
-        } catch {
-            print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-        }
-    }
- 
-    func loadFromPersistenceStore() {
-        do {
-            let data = try Data(contentsOf: fileURL())
-            entries = try JSONDecoder().decode([Entry].self, from: data)
-        } catch {
-            print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-        }
+    static func update(entry: Entry, newTitle: String, newBody: String) {
+        
+        entry.title = newTitle
+        entry.body = newBody
+        
+        JournalController.shared.saveToPersistenceStore()
+        
     }
     
 }//End of class
