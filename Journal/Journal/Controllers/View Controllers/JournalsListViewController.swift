@@ -42,7 +42,7 @@ class JournalsListViewController: UIViewController {
     
     func newJournalCreated() {
         
-        guard let newJournalTitle = journalTitleTextField.text else {return}
+        guard let newJournalTitle = journalTitleTextField.text, !newJournalTitle.isEmpty else {return}
         
         JournalController.shared.createJournalWithTitle(title: newJournalTitle)
         
@@ -90,4 +90,16 @@ extension JournalsListViewController: UITableViewDelegate, UITableViewDataSource
         
     }
     
+     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+          
+            let journalToDelete = JournalController.shared.journals[indexPath.row]
+            
+            JournalController.shared.deleteJournal(journalToDelete: journalToDelete)
+            
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+        }
+        
+    }
 }

@@ -34,8 +34,8 @@ class EntryDetailViewController: UIViewController {
     
     @IBAction func saveButtonTapped(_ sender: Any) {
         
-        guard let title = titleTextField.text,
-              let body = bodyTextField.text,
+        guard let title = titleTextField.text, !title.isEmpty,
+              let body = bodyTextField.text, !title.isEmpty,
               let journal = journal else {return}
         
         if let entry = entry  {
